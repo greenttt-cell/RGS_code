@@ -52,6 +52,17 @@ def standard_grover_steps(N: int, r: int) -> int:
 
 
 # ============================================================
+# 2b. First local peak of a probability curve
+# ============================================================
+def first_local_peak_step(prob_curve: np.ndarray) -> int:
+    for t in range(1, len(prob_curve) - 1):
+        if prob_curve[t] > prob_curve[t - 1] and prob_curve[t] >= prob_curve[t + 1]:
+            return t
+
+    return int(np.argmax(prob_curve))
+
+
+# ============================================================
 # 3. Choose T0 so that 3n = T0
 # T0 is the largest multiple of 3 not exceeding standard Grover steps
 # ============================================================
@@ -193,6 +204,7 @@ def run_one_setting(
         G1=G1,
         n=n
     )
+    det_result["t_det"] = first_local_peak_step(det_result["prob_curve"])
 
     rnd_result = run_many_random_trials(
         psi0=psi0,
@@ -235,6 +247,7 @@ def print_summary(results):
         print(f"Tg             = {res['Tg']}")
         print(f"T0             = {res['T0']}")
         print(f"n              = {res['n']}")
+        print(f"t_det          = {res['deterministic']['t_det']}")
         print(f"det final prob = {res['deterministic']['final_prob']:.6f}")
         print(f"rnd mean final = {res['random']['mean_final_prob']:.6f}")
         print(f"rnd std final  = {res['random']['std_final_prob']:.6f}")
@@ -301,8 +314,8 @@ def plot_one_comparison(
     x_scaled = steps / magnitude
     T0_scaled = T0 / magnitude
 
-    # ---- deterministic peak location ----
-    det_peak_idx = int(np.argmax(det_curve))
+    # ---- deterministic first local peak location ----
+    det_peak_idx = res["deterministic"]["t_det"]
     det_peak_scaled = det_peak_idx / magnitude
     det_peak_prob = det_curve[det_peak_idx]
 
