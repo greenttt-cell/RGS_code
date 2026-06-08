@@ -256,7 +256,6 @@ def print_summary(results):
 
 # ============================================================
 # 9. Plot one setting: deterministic vs random
-# Small-figure style consistent with previous subfigures
 # ============================================================
 def plot_one_comparison(
     res,
@@ -343,15 +342,6 @@ def plot_one_comparison(
         label="Random",
         zorder=3,
     )
-
-    # ax.axvline(
-    #     T0_scaled,
-    #     linestyle=":",
-    #     linewidth=LW_VLINE,
-    #     color="0.35",
-    #     alpha=0.75,
-    #     zorder=2
-    # )
 
     # Vertical line at the deterministic peak
     ax.axvline(
