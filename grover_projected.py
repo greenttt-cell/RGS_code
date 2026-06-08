@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({
     "mathtext.fontset": "cm",
     "font.family": "serif",
-    "font.size": 13,
-    "axes.labelsize": 15,
-    "axes.titlesize": 14,
-    "xtick.labelsize": 12,
-    "ytick.labelsize": 12,
+    "font.size": 20,
+    "axes.labelsize": 28,
+    "axes.titlesize": 26,
+    "xtick.labelsize": 22,
+    "ytick.labelsize": 22,
 })
 
 
@@ -148,10 +148,9 @@ def make_publication_figure():
         {"label": "(A)", "N": 2**15, "a0": 200, "a1": 100, "r": 1},
         {"label": "(B)", "N": 2**20, "a0": 200, "a1": 100, "r": 1},
         {"label": "(C)", "N": 2**25, "a0": 200, "a1": 100, "r": 1},
-        {"label": "(D)", "N": 2**35, "a0": 200, "a1": 100, "r": 1},
     ]
 
-    fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.8))
+    fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.4))
     axes = axes.flatten()
 
     x_ref, y_ref = quarter_circle()
@@ -181,12 +180,7 @@ def make_publication_figure():
         ax.set_aspect("equal", adjustable="box")
         ax.grid(True, alpha=0.25)
 
-        if idx in [2, 3]:
-            ax.set_xlabel(r"$\widehat{a}_3(t)$",labelpad=2)
-        else:
-            ax.set_xlabel("")
-
-        
+        ax.set_xlabel(r"$\widehat{a}_3(t)$", labelpad=2)
         ax.set_ylabel(r"$\widehat{a}_0(t)$", labelpad=2)
     
 
@@ -195,12 +189,11 @@ def make_publication_figure():
         ax.set_title(title, pad=3)
 
     fig.subplots_adjust(
-        left=0.08,
-        right=0.98,
-        bottom=0.08,
-        top=0.94,
-        wspace=0.18,
-        hspace=0.22
+        left=0.06,
+        right=0.99,
+        bottom=0.24,
+        top=0.80,
+        wspace=0.45,
     )
 
     fig.savefig("projected_trajectories_clean.pdf", bbox_inches="tight")
