@@ -78,10 +78,6 @@ def quarter_circle(n: int = 500):
 # final state    -> near (0,1)
 # =====================================================
 def draw_endpoint_arrows(ax, x_vals, y_vals):
-    # 轨迹是从接近 (0,1) 往接近 (1,0) 走
-    # 但你要标“初态”为靠近 (1,0)，标“末态”为靠近 (0,1)
-    # 所以这里按几何位置来标，而不是按数组先后顺序来标
-
     # ---------- arrow near (1,0): initial state ----------
     idx_init = np.argmax(x_vals - y_vals)   # 更靠右下角
     idx_init_prev = max(idx_init - 3, 0)
