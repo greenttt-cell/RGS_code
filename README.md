@@ -77,6 +77,8 @@ The main parameters, including the system size, marked-set sizes, intersection s
 ## Code Availability
 
 The version of the code corresponding to the manuscript will be archived on Zenodo with a permanent DOI after the manuscript version is finalized.
+The version corresponding to the manuscript is archived on Zenodo with the DOI:
+https://doi.org/10.5281/zenodo.20603404
 
 ## Citation
 
