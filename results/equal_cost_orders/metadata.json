@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "timing_protocol": "five_methods_shared_random_and_naive_optimal_orders_v1",
+  "status": "complete",
+  "created_utc": "2026-11-01T03:55:01.373616+00:00",
+  "config": {
+    "N": 281474976710656,
+    "r": 1,
+    "k_min": 1,
+    "k_max": 15,
+    "samples": 50,
+    "target_success": 0.99,
+    "union_min": 256,
+    "union_max": 1024,
+    "dirichlet_alpha": 1.0,
+    "seed": 20261028,
+    "timing_repeats": 3,
+    "timing_min_seconds": 0.005,
+    "ss_maxiter": 50000,
+    "bootstrap_resamples": 2000,
+    "order_seed": 20261101,
+    "instances_from": ""
+  },
+  "source_sha256": {
+    "experiment_equal_cost_orders.py": "1cd886f855922b701093d96794d1f0c07154288e02e7a8c75e89be75b063af07",
+    "experiment_equal_cost.py": "27ba6e29759251cab19ba087adec24d485e5990b77269506e340d12d50cd7065",
+    "nested_amplification.py": "bf4f85c01e506712327f7bfb66d23a9caee86fb5694c9e9e892f1236960ae943"
+  },
+  "input_data": null,
+  "environment": {
+    "python": "3.11.4 (tags/v3.11.4:d2340ef, Jun  7 2023, 05:45:37) [MSC v.1934 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.22000-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "packages": {
+      "numpy": "2.0.2",
+      "scipy": "1.15.2",
+      "matplotlib": "3.9.4"
+    }
+  },
+  "method_labels": {
+    "rgs": "RGS",
+    "naive_random": "Naïve AA (random order)",
+    "ss_random": "SS (random order)",
+    "naive_optimized": "Naïve AA (optimized order)",
+    "ss_optimized": "SS (naïve-optimal order)"
+  },
+  "timing_components": {
+    "rgs": [
+      "rgs"
+    ],
+    "naive_random": [
+      "random_order",
+      "naive_random"
+    ],
+    "ss_random": [
+      "random_order",
+      "ss_random"
+    ],
+    "naive_optimized": [
+      "naive_optimized"
+    ],
+    "ss_optimized": [
+      "naive_optimized",
+      "ss_optimized"
+    ]
+  },
+  "protocol": {
+    "instances": "All five methods share each full region instance; same ensemble and set seed as experiment_equal_cost.py.",
+    "random_order": "Uniform permutation drawn once per instance from an independent recorded seed; shared by random-order naive and SS. Timing uses a separate RNG stream so calibration cannot change the selected order.",
+    "optimized_order": "Subset DP minimizes naive AA's finite cost; both optimized-order variants share that order. SS does not independently optimize its order or merge tests.",
+    "success": "Unit Boolean-query costs; common target success. RGS uses its theorem certificate, not an empirical probability; both SS variants use final coherent amplify.",
+    "timing": "Random variants include shared random-draw time plus their own planning/optimization. Optimized naive is the DP stage, optimized SS adds its own SS optimization to the same measured DP stage. Totals are sums of component medians, not independently measured end-to-end samples.",
+    "excluded": "Imports, RNG initialization, warmup, set generation, full-table conversion/validation, cardinality acquisition, quantum simulation, I/O, statistics and plotting. Only the optimized variants are charged subset DP.",
+    "statistics": "Means with paired-index 95% bootstrap intervals; incomplete five-method groups are omitted from figures; failed cases stop the run without replacement."
+  },
+  "completed_instances": 750,
+  "completed_utc": "2026-11-01T03:58:28.961931+00:00"
+}

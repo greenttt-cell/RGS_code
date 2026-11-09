@@ -1,0 +1,527 @@
+{
+  "config": {
+    "N": 18446744073709551616,
+    "r": 1,
+    "cases": [
+      [
+        1000,
+        1000
+      ],
+      [
+        10000,
+        10000
+      ],
+      [
+        100000,
+        100000
+      ]
+    ],
+    "rgs_target": 0.99,
+    "lambda_min": 1.0,
+    "lambda_max": 100000.0,
+    "lambda_points": 241
+  },
+  "cases": [
+    {
+      "case": 1,
+      "a0": 1000,
+      "a1": 1000,
+      "N": 18446744073709551616,
+      "r": 1,
+      "m": 1999,
+      "rgs": {
+        "method": "rgs",
+        "completion": "none",
+        "steps": 3373259425,
+        "sampling_probabilities": [
+          0.9998118227826731,
+          0.0001881772173269405
+        ],
+        "query_counts": [
+          3372624654.428082,
+          634770.5719183753
+        ],
+        "weighted_cost": 3373259425.0,
+        "success_lower_bound": 0.99,
+        "success_probability": null,
+        "success_certificate": "theorem_biased_sampling_lower_bound",
+        "target_success": 0.99,
+        "query_counts_are_expectations": true,
+        "probability_lower_constraint": 0.0001881772173269405,
+        "probability_optimality": "optimal_under_theorem_sufficient_constraints"
+      },
+      "naive_orders": [
+        {
+          "method": "naive",
+          "order": [
+            0,
+            1
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            1000,
+            1
+          ],
+          "iterations": [
+            106671829,
+            25
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            5440263279,
+            26
+          ],
+          "query_counts": [
+            5440263279,
+            26
+          ],
+          "inner_weighted_cost": 5440263305.0,
+          "weighted_cost": 5440263305.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        },
+        {
+          "method": "naive",
+          "order": [
+            1,
+            0
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            1000,
+            1
+          ],
+          "iterations": [
+            106671829,
+            25
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            26,
+            5440263279
+          ],
+          "query_counts": [
+            26,
+            5440263279
+          ],
+          "inner_weighted_cost": 5440263305.0,
+          "weighted_cost": 5440263305.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        }
+      ],
+      "lambda_leading": 3034.410082849347,
+      "lambda_finite": 3257.4341176686817,
+      "relative_error_percent": 7.349831721159861,
+      "finite_crossings": [
+        {
+          "lambda": 3257.4341176686817,
+          "cheaper_below": "rgs",
+          "cheaper_above": "naive",
+          "changes_winner": true,
+          "optimal_orders": [
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "asymptotic_regime": {
+        "m_over_sqrt_Nr": 4.654284566640854e-07,
+        "r_over_a0": 0.001,
+        "r_over_a1": 0.001
+      }
+    },
+    {
+      "case": 2,
+      "a0": 10000,
+      "a1": 10000,
+      "N": 18446744073709551616,
+      "r": 1,
+      "m": 19999,
+      "rgs": {
+        "method": "rgs",
+        "completion": "none",
+        "steps": 3373259425,
+        "sampling_probabilities": [
+          0.9981292138683585,
+          0.0018707861316415134
+        ],
+        "query_counts": [
+          3366948778.049281,
+          6310646.950719026
+        ],
+        "weighted_cost": 3373259425.0,
+        "success_lower_bound": 0.99,
+        "success_probability": null,
+        "success_certificate": "theorem_biased_sampling_lower_bound",
+        "target_success": 0.99,
+        "query_counts_are_expectations": true,
+        "probability_lower_constraint": 0.0018707861316415134,
+        "probability_optimality": "optimal_under_theorem_sufficient_constraints"
+      },
+      "naive_orders": [
+        {
+          "method": "naive",
+          "order": [
+            0,
+            1
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            10000,
+            1
+          ],
+          "iterations": [
+            33732594,
+            79
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            5363482446,
+            80
+          ],
+          "query_counts": [
+            5363482446,
+            80
+          ],
+          "inner_weighted_cost": 5363482526.0,
+          "weighted_cost": 5363482526.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        },
+        {
+          "method": "naive",
+          "order": [
+            1,
+            0
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            10000,
+            1
+          ],
+          "iterations": [
+            33732594,
+            79
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            80,
+            5363482446
+          ],
+          "query_counts": [
+            80,
+            5363482446
+          ],
+          "inner_weighted_cost": 5363482526.0,
+          "weighted_cost": 5363482526.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        }
+      ],
+      "lambda_leading": 306.114221458959,
+      "lambda_finite": 316.3794447538876,
+      "relative_error_percent": 3.3533964041278175,
+      "finite_crossings": [
+        {
+          "lambda": 316.3794447538876,
+          "cheaper_below": "rgs",
+          "cheaper_above": "naive",
+          "changes_winner": true,
+          "optimal_orders": [
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "asymptotic_regime": {
+        "m_over_sqrt_Nr": 4.656380042433739e-06,
+        "r_over_a0": 0.0001,
+        "r_over_a1": 0.0001
+      }
+    },
+    {
+      "case": 3,
+      "a0": 100000,
+      "a1": 100000,
+      "N": 18446744073709551616,
+      "r": 1,
+      "m": 199999,
+      "rgs": {
+        "method": "rgs",
+        "completion": "none",
+        "steps": 3373259426,
+        "sampling_probabilities": [
+          0.9811776144981842,
+          0.018822385501815857
+        ],
+        "query_counts": [
+          3309766636.686194,
+          63492789.31380608
+        ],
+        "weighted_cost": 3373259426.0,
+        "success_lower_bound": 0.99,
+        "success_probability": null,
+        "success_certificate": "theorem_biased_sampling_lower_bound",
+        "target_success": 0.99,
+        "query_counts_are_expectations": true,
+        "probability_lower_constraint": 0.018822385501815857,
+        "probability_optimality": "optimal_under_theorem_sufficient_constraints"
+      },
+      "naive_orders": [
+        {
+          "method": "naive",
+          "order": [
+            0,
+            1
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            100000,
+            1
+          ],
+          "iterations": [
+            10667183,
+            248
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            5301589951,
+            249
+          ],
+          "query_counts": [
+            5301589951,
+            249
+          ],
+          "inner_weighted_cost": 5301590200.0,
+          "weighted_cost": 5301590200.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        },
+        {
+          "method": "naive",
+          "order": [
+            1,
+            0
+          ],
+          "prefix_sizes": [
+            18446744073709551616,
+            100000,
+            1
+          ],
+          "iterations": [
+            10667183,
+            248
+          ],
+          "stage_success_probabilities": [
+            1.0,
+            1.0
+          ],
+          "inner_success_probability": 1.0,
+          "success_probability": 1.0,
+          "target_success": 1.0,
+          "inner_query_counts": [
+            249,
+            5301589951
+          ],
+          "query_counts": [
+            249,
+            5301589951
+          ],
+          "inner_weighted_cost": 5301590200.0,
+          "weighted_cost": 5301590200.0,
+          "completion": "stagewise",
+          "phase_adjustments": [
+            false,
+            true
+          ],
+          "outer_iterations": 0,
+          "outer_phase_adjusted": false,
+          "repetitions": 1,
+          "success_flags": 0,
+          "optimality": "not_optimized",
+          "evaluations": 1,
+          "orders_searched": 1,
+          "orders_exhaustive": false,
+          "iteration_bounds": [],
+          "optimization_method": "not_optimized",
+          "optimizer_success": null,
+          "optimizer_message": "",
+          "optimizer_iterations": 0,
+          "continuous_iterations": [],
+          "continuous_success_probability": null,
+          "continuous_amplified_cost": null,
+          "continuous_expected_cost": null,
+          "rounding_cost_ratio": null,
+          "naive_target_success": null
+        }
+      ],
+      "lambda_leading": 31.32552027797019,
+      "lambda_finite": 31.370981606176116,
+      "relative_error_percent": 0.14512553280048301,
+      "finite_crossings": [
+        {
+          "lambda": 31.370981606176116,
+          "cheaper_below": "rgs",
+          "cheaper_above": "naive",
+          "changes_winner": true,
+          "optimal_orders": [
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "asymptotic_regime": {
+        "m_over_sqrt_Nr": 4.656589590013027e-05,
+        "r_over_a0": 1e-05,
+        "r_over_a1": 1e-05
+      }
+    }
+  ]
+}
