@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+# Uncompressed copies of the archived experiment records
+/results/equal_cost_orders/instances.jsonl
+/results/equal_cost_orders/per_instance.csv
+/results/cost_heterogeneity/instances.json
+/results/cost_heterogeneity/results.jsonl
+/results/cost_heterogeneity/per_instance.csv
+# New experiment runs
+/results/reproduce_fig*/
+/results/*_pilot*/

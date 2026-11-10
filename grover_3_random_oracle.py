@@ -1,4 +1,19 @@
-#second subsection of numerical experiments
+"""Three-oracle biased sampling, using 50 independent random sequences.
+
+    python grover_3_random_oracle.py --output results/biased_sampling
+    python grover_3_random_oracle.py --plot-only --output results/biased_sampling
+
+The command-line experiment records empirical mean success probabilities,
+using the original sampling probabilities and per-trial random seeds.
+Saved CSV data can be redrawn in the unified manuscript style.
+"""
+import argparse
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
@@ -110,6 +125,131 @@ def compute_probabilities_three_sets(N, m, r, delta):
 # ============================================================
 def standard_grover_steps(N, r):
     return int(np.round(np.pi / 4 * np.sqrt(N / r)) - 0.5)
+
+
+def run_sampled_curves_three(block_sizes, delta_list, n_trials=50, seed_base=1,
+                             points=1001, T_steps=None, progress=False):
+    """Sample independent Grover sequences and save their probabilities on a grid.
+
+    Use the same per-trial seeds and oracle-selection rule as
+    run_many_random_trials_three. Trials are advanced together to reduce Python
+    overhead; each trial still follows its own sampled oracle sequence.
+    """
+    if n_trials < 1 or points < 2 or seed_base < 0:
+        raise ValueError("need n_trials>=1, points>=2, and seed_base>=0")
+    N, psi0, Gs = build_8d_system(block_sizes)
+    r, m, _ = get_r_and_m(block_sizes)
+    if r <= 0:
+        raise ValueError("need a nonempty target intersection")
+    T = math.floor(math.pi/4*math.sqrt(N/r)) if T_steps is None else int(T_steps)
+    if T < 0:
+        raise ValueError("T_steps must be nonnegative")
+    steps = np.unique(np.rint(np.linspace(0, T, min(points, T+1))).astype(np.int64))
+    D = 2*np.outer(psi0, psi0)-np.eye(len(psi0))
+    # Since G_i=D O_i and D^2=I, recover each diagonal phase oracle.
+    signs = np.array([np.where(np.diag(D @ G) < 0, -1., 1.) for G in Gs])
+    results = {}
+    for index, delta in enumerate(delta_list):
+        if not math.isfinite(delta) or not 0 < delta < 1:
+            raise ValueError("delta must lie strictly between zero and one")
+        probabilities = compute_probabilities_three_sets(N, m, r, delta)
+        cumulative = np.cumsum(probabilities)
+        used_seeds = [seed_base+1000*index+trial for trial in range(n_trials)]
+        choices = np.empty((T, n_trials), dtype=np.uint8)
+        counts = np.zeros((n_trials, 3), dtype=np.int64)
+        for trial, seed in enumerate(used_seeds):
+            rng = np.random.default_rng(seed)
+            selected = np.searchsorted(cumulative, rng.random(T), side="right")
+            if np.any(selected >= 3):
+                raise ArithmeticError("invalid sampled oracle index")
+            choices[:, trial] = selected
+            counts[trial] = np.bincount(selected, minlength=3)
+        states = np.repeat(psi0[None, :], n_trials, axis=0)
+        curves = np.empty((n_trials, len(steps)))
+        curves[:, 0] = psi0[0]**2
+        position = 1
+        if progress:
+            print("Sampling delta=%g: %d independent trials, T=%d" % (delta, n_trials, T), flush=True)
+        for t in range(1, T+1):
+            marked = states*signs[choices[t-1]]
+            states = 2*(marked @ psi0)[:, None]*psi0[None, :]-marked
+            if position < len(steps) and t == steps[position]:
+                curves[:, position] = states[:, 0]**2
+                position += 1
+        norm_error = float(np.max(np.abs(np.sum(states**2, axis=1)-1)))
+        if norm_error > 1e-7:
+            raise ArithmeticError("sampled trajectories exceeded the norm-error tolerance")
+        std = curves.std(axis=0, ddof=1) if n_trials > 1 else np.zeros(len(steps))
+        ratios = counts/T if T else np.zeros_like(counts, dtype=float)
+        results[float(delta)] = {
+            "N": N, "r": r, "m": m, "block_sizes": [int(x) for x in block_sizes],
+            "delta": float(delta), "p0": probabilities[0], "p1": probabilities[1],
+            "p2": probabilities[2], "T_steps": T, "steps": steps, "n_trials": n_trials,
+            "seed_base": seed_base+1000*index, "used_seeds": used_seeds,
+            "method": "monte_carlo_sample_mean", "final_state_norm_error_max": norm_error,
+            "sampled_prob_curves": curves, "all_counts": counts, "all_ratios": ratios,
+            "summary": {"mean_prob_curve": curves.mean(axis=0), "std_prob_curve": std,
+                        "standard_error_curve": std/math.sqrt(n_trials),
+                        "mean_final_prob": float(curves[:, -1].mean()),
+                        "std_final_prob": float(std[-1]),
+                        "mean_counts": counts.mean(axis=0), "mean_ratios": ratios.mean(axis=0)}}
+        if progress:
+            print("Completed delta=%g: sample mean at T=%.9f" %
+                  (delta, results[float(delta)]["summary"]["mean_final_prob"]), flush=True)
+    return results
+
+
+def save_sampled_curves_three(results, output):
+    """Save Monte Carlo means, variability, seeds, and the sampled trajectories."""
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    records, cases, arrays = [], [], {}
+    for index, (delta, result) in enumerate(results.items()):
+        summary = result["summary"]
+        for point, step in enumerate(result["steps"]):
+            records.append({"delta": delta, "step": int(step), "n_trials": result["n_trials"],
+                            "mean_success_probability": float(summary["mean_prob_curve"][point]),
+                            "std_success_probability": float(summary["std_prob_curve"][point]),
+                            "standard_error": float(summary["standard_error_curve"][point])})
+        cases.append({key: value for key, value in result.items()
+                      if key not in ("steps", "summary", "sampled_prob_curves", "all_counts", "all_ratios")})
+        arrays["steps_%d" % index] = result["steps"]
+        arrays["trial_probabilities_%d" % index] = result["sampled_prob_curves"]
+        arrays["counts_%d" % index] = result["all_counts"]
+    with (output/"curves.csv").open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(records[0]))
+        writer.writeheader()
+        writer.writerows(records)
+    np.savez_compressed(output/"sampled_trials.npz", **arrays)
+    metadata = {"method": "monte_carlo_sample_mean",
+                "sampling": "Independent sampled oracle sequences; same per-trial seeds as the original experiment.",
+                "computation": "Batched trajectories, using G_i=D O_i; no ensemble second-moment propagation.",
+                "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                "numpy_version": np.__version__, "cases": cases}
+    (output/"parameters.json").write_text(json.dumps(metadata, indent=2, allow_nan=False)+"\n", encoding="utf-8")
+
+
+def load_sampled_curves_three(output):
+    """Read saved empirical means without sampling again."""
+    output = Path(output)
+    metadata = json.loads((output/"parameters.json").read_text(encoding="utf-8"))
+    if metadata.get("method") != "monte_carlo_sample_mean":
+        raise ValueError("the input directory does not contain Monte Carlo sample means")
+    with (output/"curves.csv").open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    results = {}
+    for case in metadata["cases"]:
+        delta = case["delta"]
+        selected = sorted((row for row in rows if float(row["delta"]) == delta), key=lambda row: int(row["step"]))
+        if not selected:
+            raise ValueError("saved curve is missing for delta="+str(delta))
+        mean = np.array([float(row["mean_success_probability"]) for row in selected])
+        std = np.array([float(row["std_success_probability"]) for row in selected])
+        results[delta] = {**case, "steps": np.array([int(row["step"]) for row in selected], dtype=np.int64),
+                          "summary": {"mean_prob_curve": mean, "std_prob_curve": std,
+                                      "standard_error_curve": np.array([float(row["standard_error"]) for row in selected]),
+                                      "mean_final_prob": float(mean[-1]), "std_final_prob": float(std[-1])}}
+    return results
 
 
 # ============================================================
@@ -333,106 +473,51 @@ def run_multi_delta_experiments(block_sizes, delta_list, n_trials=50, seed_base=
 # ============================================================
 #9. 3-delta picture and usage ratio picture 
 # ============================================================
-def plot_multi_delta_mean_curves(results_dict, save_pdf=False, filename_prefix="multi_delta"):
-
-    # =====================================================
-    # Match style/size with plot_vary_delta_for_fixed_A0
-    # =====================================================
-    plt.rcParams.update({
-        "mathtext.fontset": "cm",
-        "font.family": "serif",
-        "font.size": 14,
-        "axes.labelsize": 16,
-        "axes.titlesize": 14,
-        "xtick.labelsize": 12,
-        "ytick.labelsize": 12,
-        "legend.fontsize": 11,
-        "axes.linewidth": 0.8,
-        "xtick.direction": "in",
-        "ytick.direction": "in",
-        "axes.grid": True,
-        "grid.alpha": 0.30,
-        "grid.linewidth": 0.45,
-        "savefig.dpi": 600,
-        "savefig.bbox": "tight",
-        "pdf.fonttype": 42,
-        "ps.fonttype": 42,
-    })
-
-    # same size as previous function
-    fig, ax = plt.subplots(figsize=(4.6, 4.6))
-
-    # =====================================================
-    # x-axis scaling
-    # =====================================================
-    first_delta = list(results_dict.keys())[0]
-    T_steps = results_dict[first_delta]["T_steps"]
-
-    magnitude = 10 ** max(0, int(np.floor(np.log10(T_steps))) - 1)
-    T_steps_sc = T_steps / magnitude
-
-    # =====================================================
-    # curves
-    # =====================================================
-    for delta, results in results_dict.items():
-        mean_curve = results["summary"]["mean_prob_curve"]
-        steps_sc = np.arange(len(mean_curve)) / magnitude
-
-        ax.plot(
-            steps_sc,
-            mean_curve,
-            linewidth=2.0,
-            label=rf"$\delta={delta}$"
-        )
-
-    # =====================================================
-    # vertical T0 line
-    # =====================================================
-    ax.axvline(
-        T_steps_sc,
-        linestyle=":",
-        color="0.35",
-        linewidth=1.1
-    )
-
-    ax_top = ax.twiny()
-    ax_top.set_xlim(ax.get_xlim())
-    ax_top.set_xticks([T_steps_sc])
-    ax_top.set_xticklabels([r"$T_0$"])
-    ax_top.tick_params(axis="x", direction="in", length=3, width=0.7, pad=2)
-    ax_top.xaxis.set_minor_locator(mticker.NullLocator())
-
-    # =====================================================
-    # labels
-    # =====================================================
-    exp = int(np.log10(magnitude)) if magnitude >= 1e3 else None
-
-    if exp is not None:
-        ax.set_xlabel(rf"Iteration step $\times 10^{{{exp}}}$")
-    else:
-        ax.set_xlabel("Iteration step")
-
-    ax.set_ylabel(r"$a_0^2(t)$")
-
-    ax.set_ylim(-0.02, 1.05)
-    ax.yaxis.set_major_locator(mticker.MultipleLocator(0.2))
-    ax.yaxis.set_minor_locator(mticker.MultipleLocator(0.05))
-
-    # =====================================================
-    # title (optional but recommended for consistency)
-    # =====================================================
-    
-
-    ax.legend(loc="upper left", frameon=True)
-
-    plt.tight_layout()
-
-    if save_pdf:
-        fig.savefig(f"{filename_prefix}.pdf")
-        print(f"Saved: {filename_prefix}.pdf")
-
-    plt.show()
-    plt.close(fig)
+def plot_multi_delta_mean_curves(results_dict, save_pdf=False, filename_prefix="multi_delta", show=True):
+    """Plot Monte Carlo sample means in the unified manuscript style."""
+    if not results_dict:
+        raise ValueError("no curves to plot")
+    T_steps = next(iter(results_dict.values()))["T_steps"]
+    exponent = max(0, int(np.floor(np.log10(max(1, T_steps)))))
+    scale = 10**exponent
+    colors = ("#0072B2", "#D55E00", "#009E73", "#CC79A7")
+    with plt.rc_context({
+        "font.family": "DejaVu Sans", "mathtext.fontset": "dejavusans",
+        "font.size": 10, "axes.labelsize": 10, "xtick.labelsize": 8.5,
+        "ytick.labelsize": 8.5, "legend.fontsize": 8.5,
+        "axes.spines.top": False, "axes.spines.right": False,
+        "axes.linewidth": .7, "xtick.direction": "out", "ytick.direction": "out",
+        "axes.grid": False, "pdf.fonttype": 42, "savefig.bbox": None,
+    }):
+        fig, ax = plt.subplots(figsize=(3.2, 2.8))
+        fig.subplots_adjust(left=.19, right=.965, bottom=.21, top=.91)
+        for index, (delta, result) in enumerate(results_dict.items()):
+            curve = result["summary"]["mean_prob_curve"]
+            steps = result.get("steps", np.arange(len(curve)))
+            if result["T_steps"] != T_steps or len(steps) != len(curve):
+                raise ValueError("curves must share the same stopping time and have one time per point")
+            ax.plot(np.asarray(steps)/scale, curve, linewidth=1.5,
+                    color=colors[index % len(colors)], label=rf"$\delta={delta:g}$")
+        ax.axvline(T_steps/scale, color=".25", linestyle=":", linewidth=.9)
+        ax.text(T_steps/scale, 1.02, r"$T$", ha="center", va="bottom",
+                transform=ax.get_xaxis_transform(), fontsize=9)
+        ax.set(xlim=(0, max(1, T_steps)/scale*1.04), ylim=(-.02, 1.03))
+        ax.set_xlabel(rf"Iteration step ($\times 10^{{{exponent}}}$)" if exponent else "Iteration step")
+        ax.set_ylabel(r"$a_0^2(t)$")
+        ax.yaxis.set_major_locator(mticker.MultipleLocator(.2))
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.grid(True, which="major", alpha=.22, linewidth=.5)
+        ax.legend(loc="upper left", frameon=False, handlelength=1.8)
+        if save_pdf:
+            destination = Path(filename_prefix)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            fig.savefig(destination.with_suffix(".pdf"))
+            fig.savefig(destination.with_suffix(".png"), dpi=300)
+            print("Saved: "+str(destination.with_suffix(".pdf")))
+        if show:
+            plt.show()
+        plt.close(fig)
+    return fig
 
 def plot_usage_ratio_bar(results_dict, save_pdf=False, filename_prefix="usage_bar"):
     # =====================================================
@@ -555,29 +640,26 @@ def plot_usage_ratio_bar(results_dict, save_pdf=False, filename_prefix="usage_ba
 # 9. Example usage
 # ============================================================
 if __name__ == "__main__":
-    # Example block sizes:
-    # [I1, I2, I3, I4, I5, I6, I7, I8]
-    N_total = 2**40
-    block_sizes = [1, 12, 8, 79, 10, 177, 31, 2**40-318]
-
-    delta_list = [0.005,0.15,0.4]
-    results_dict = run_multi_delta_experiments(
-        block_sizes=block_sizes,
-        delta_list=delta_list,
-        n_trials=50,
-        seed_base=1
-    )
-    
-    print("\n===== Expected success probabilities =====")
-    for delta, results in results_dict.items():
-        mean_prob = results["summary"]["mean_final_prob"]
-        std_prob = results["summary"]["std_final_prob"]
-        print(
-            f"delta = {delta:<5} | "
-            f"E[a0^2(T0)] = {mean_prob:.6f} | "
-            f"std = {std_prob:.6f} | "
-            f"theoretical bound = {1-delta:.6f}"
-        )
-
-    plot_usage_ratio_bar(results_dict, True)
-    plot_multi_delta_mean_curves(results_dict, True)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--output", type=Path, default=Path("results/biased_sampling"))
+    parser.add_argument("--points", type=int, default=1001, help="integer times recorded from 0 through T")
+    parser.add_argument("--trials", type=int, default=50)
+    parser.add_argument("--seed-base", type=int, default=1)
+    parser.add_argument("--plot-only", action="store_true", help="read saved empirical curves only")
+    parser.add_argument("--figure-prefix", type=Path, help="default: OUTPUT/figures/multi_delta")
+    parser.add_argument("--show", action="store_true", help="also show an interactive figure")
+    args = parser.parse_args()
+    if args.plot_only:
+        results_dict = load_sampled_curves_three(args.output)
+    else:
+        if (args.output/"parameters.json").exists() or (args.output/"curves.csv").exists():
+            parser.error("results already exist; use --plot-only or a different --output")
+        results_dict = run_sampled_curves_three(
+            [1, 12, 8, 79, 10, 177, 31, 2**40-318], [.005, .15, .4],
+            n_trials=args.trials, seed_base=args.seed_base, points=args.points, progress=True)
+        save_sampled_curves_three(results_dict, args.output)
+    for delta, result in results_dict.items():
+        print("delta=%g | sample mean a0^2(T)=%.9f | trials=%d | T=%d" %
+              (delta, result["summary"]["mean_final_prob"], result["n_trials"], result["T_steps"]))
+    destination = args.figure_prefix or args.output/"figures"/"multi_delta"
+    plot_multi_delta_mean_curves(results_dict, save_pdf=True, filename_prefix=destination, show=args.show)

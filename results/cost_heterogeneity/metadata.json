@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "protocol_id": "multi_oracle_mean_normalized_cost_heterogeneity_v1",
+  "completed": true,
+  "created_utc": "2026-10-28T11:27:11.772634+00:00",
+  "config": {
+    "N": 281474976710656,
+    "r": 1,
+    "k_min": 2,
+    "k_max": 15,
+    "samples": 50,
+    "union_min": 256,
+    "union_max": 1024,
+    "dirichlet_alpha": 1.0,
+    "kappa_min": 1.0,
+    "kappa_max": 1000.0,
+    "kappa_points": 13,
+    "target_success": 0.99,
+    "seed": 20261028,
+    "ss_maxiter": 50000,
+    "bootstrap_resamples": 2000
+  },
+  "source_sha256": {
+    "experiment_cost_heterogeneity.py": "2997ac1f43dadefbfd1df78df6cf5a5dc3bcb0de24a108e6fa0c7a064fdb1067",
+    "experiment_equal_cost.py": "137fee543d286a779abce9aebf32aeae493875badbd44f1fc0f4669471d2ba37",
+    "nested_amplification.py": "c2e890bedfcaad8dc01aad83d5a65481e7cb743ae91cf18bf7105debde46a646"
+  },
+  "packages": {
+    "numpy": "2.0.2",
+    "scipy": "1.15.2"
+  },
+  "cohort_sha256": "66db87acc80e2ee70d76603dc84ae0a3f2cdcbb4ae900db4effec13d45aab0ab",
+  "kappa_grid": [
+    1.0,
+    1.7782794100389228,
+    3.1622776601683795,
+    5.623413251903491,
+    10.0,
+    17.78279410038923,
+    31.622776601683793,
+    56.23413251903491,
+    100.0,
+    177.82794100389228,
+    316.22776601683796,
+    562.341325190349,
+    1000.0
+  ],
+  "profiles": [
+    "one_cheap",
+    "one_expensive",
+    "gradual"
+  ],
+  "environment": {
+    "python": "3.11.4 (tags/v3.11.4:d2340ef, Jun  7 2023, 05:45:37) [MSC v.1934 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.22000-SP0"
+  },
+  "protocol": {
+    "sets": "Same Dirichlet-multinomial union-region cohort as equal-cost experiment, fixed per k; m uniform on union_min..union_max; no rejected/resampled cases.",
+    "costs": "Mean 1; kappa=mean/min; one_cheap, one_expensive, linear gradual. Ascending costs mapped to a seeded random permutation of original oracle IDs, fixed across all kappa and profiles.",
+    "rgs": "Minimize cost under theorem sufficient constraints; full p denominator and peak stopping time; certified lower bound, no quantum simulation.",
+    "nested": "Exact naive order DP per cost vector; SS follows that order, one test per level, integer-count optimization including final amplify. SS generally best found, not globally certified.",
+    "timing": "Single-call diagnostics only: naive=order optimization, SS=that same order time plus SS extra time. Excludes instance generation/validation, cardinality acquisition, imports, I/O and plots. Not repeated timing benchmarks.",
+    "statistics": "Ratio of sample mean costs, paired percentile bootstrap 95% CI, and per-instance win fractions. Incomplete cohort groups are explicitly marked and excluded from plots.",
+    "heatmaps": "Two figures, each with three cost-profile panels. Shared log color scale centered at ratio 1; contours visualize mean-cost equality between sampled cells, not certified thresholds.",
+    "scope": "This fixed union-size ensemble may contain redundant filters at large k; conclusions are specific to the ensemble, not a universal scaling claim."
+  },
+  "completed_utc": "2026-10-28T11:56:55.176886+00:00"
+}

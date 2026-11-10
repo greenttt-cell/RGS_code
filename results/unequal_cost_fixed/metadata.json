@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "protocol": "fixed_instances_rgs_vs_exact_naive_v1",
+  "created_utc": "2026-10-28T08:41:34.619624+00:00",
+  "config": {
+    "N": 18446744073709551616,
+    "r": 1,
+    "cases": [
+      [
+        1000,
+        1000
+      ],
+      [
+        10000,
+        10000
+      ],
+      [
+        100000,
+        100000
+      ]
+    ],
+    "rgs_target": 0.99,
+    "lambda_min": 1.0,
+    "lambda_max": 100000.0,
+    "lambda_points": 241
+  },
+  "source_sha256": {
+    "experiment_unequal_cost_fixed.py": "8ec0689df6dc69e77ad27c35e1c4df9a56479b9c18f156550299b38791d9256a",
+    "nested_amplification.py": "c2e890bedfcaad8dc01aad83d5a65481e7cb743ae91cf18bf7105debde46a646",
+    "experiment_equal_cost.py": "137fee543d286a779abce9aebf32aeae493875badbd44f1fc0f4669471d2ba37",
+    "experiment_unequal_cost.py": "cf0ff152b1fc0d8ce6b06c2ed77e7dbec83bbac1aa7d5a17fc202fc75396b7c9"
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.3.5",
+      "matplotlib": "3.9.4"
+    }
+  },
+  "protocol_notes": [
+    "Only RGS and naive nesting; fixed cardinalities, no random averaging or confidence intervals.",
+    "Naive success=1, RGS certified success>=rgs_target, matching Section 3.4.2.",
+    "RGS uses the paper's sufficient-bound biased sampling and near-peak stopping time.",
+    "Both naive orders are compared exactly at every price; order-specific counts are computed once.",
+    "Leading critical points use the full finite-N p to isolate leading-cost approximation errors.",
+    "Finite crossings analytically intersect the affine query costs and verify the optimal-order envelope.",
+    "Coincident intervals have no isolated critical point. All isolated candidates are stored.",
+    "Curve grids include in-range analytical critical points; grid resolution does not determine their accuracy."
+  ]
+}

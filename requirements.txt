@@ -1,12 +1,3 @@
-## Software Requirements
-
-The code was tested with the following environment:
-
-- Python: 3.9.6
-- NumPy: 2.0.2
-- Matplotlib: 3.9.4
-
-To install the required packages, run:
-
-```bash
-pip install -r requirements.txt
+numpy==2.0.2
+matplotlib==3.9.4
+scipy>=1.10,<2
